@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  php:
+    build: build/php
+    expose:
+      - "9001"
+    depends_on:
+      - db
+    volumes:
+      - ./symfony:/var/www/symfony:cached
+      - ./logs/symfony:/var/www/symfony/var/log:cached
+  web:
+    build: build/nginx
+    restart: always
+    ports:
+      - "80:80"
+    links:
+      - php
+    volumes:
+      - ./symfony:/var/www/symfony:cached
+      - ./logs/nginx:/var/log/nginx:cached
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: symfony
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
